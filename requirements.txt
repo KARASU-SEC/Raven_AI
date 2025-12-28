@@ -1,0 +1,30 @@
+# Основные зависимости
+PyQt6>=6.5.0
+psutil>=5.9.0
+SpeechRecognition>=3.10.0
+pyttsx3>=2.90
+Pillow>=10.0.0
+
+# Веб-фреймворк для API
+Flask>=2.3.0
+Flask-CORS>=4.0.0
+requests>=2.31.0
+
+# Распознавание речи
+pyaudio>=0.2.11
+vosk>=0.3.45  # Офлайн распознавание
+
+# Машинное обучение (опционально)
+torch>=2.0.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# Дополнительные для Windows
+pywin32>=305  # Только для Windows
+pyautogui>=0.9.54
+
+# Для тестирования
+pytest>=7.0.0
+Flask>=2.3.0
+Flask-CORS>=4.0.0
+psutil>=5.9.0

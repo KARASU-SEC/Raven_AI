@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Assistant - Raven AI</title>
+    <style>
+        :root {
+            --karasu-dark: #0a0a0a;
+            --karasu-darker: #050505;
+            --karasu-red: #e63946;
+            --karasu-red-light: #ff003c;
+            --karasu-text: #f5f5f5;
+            --karasu-text-gray: #b1b1b1;
+            --karasu-border: #333333;
+            --ai-color: #3498db;
+            --user-color: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background: var(--karasu-dark);
+            color: var(--karasu-text);
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .ai-container {
+            display: flex;
+            height: 100vh;
+            padding: 20px;
+            gap: 20px;
+        }
+
+        /* Левая панель - модели и настройки */
+        .ai-sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, var(--karasu-darker), #111111);
+            border: 1px solid var(--karasu-border);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-title {
+            color: var(--karasu-red);
+            font-size: 22px;
+            margin-bottom: 10px;
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .ai-subtitle {
+            color: var(--karasu-text-gray);
+            font-size: 13px;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .model-section {
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--karasu-text);
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--karasu-border);
+        }
+
+        .model-select {
+            width: 100%;
+            padding: 10px 12px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid var(--karasu-border);
+            border-radius: 8px;
+            color: var(--karasu-text);
+            font-size: 13px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .model-select:focus {
+            outline: none;
+            border-color: var(--karasu-red);
+        }
+
+        .model-info {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 12px;
+            color: var(--karasu-text-gray);
+            margin-bottom: 15px;
+        }
+
+        .model-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 6px;
+        }
+
+        .stat-value {
+            color: var(--karasu-text);
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-label {
+            color: var(--karasu-text-gray);
+            font-size: 10px;
+        }
+
+        .ai-toggle {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 15px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .toggle-label {
+            color: var(--karasu-text);
+            font-size: 13px;
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 40px;
+            height: 20px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #444;
+            transition: .4s;
+            border-radius: 20px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--karasu-red);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(20px);
+        }
+
+        .ai-slider {
+            margin: 15px 0;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .slider-label span {
+            color: var(--karasu-text);
+            font-size: 13px;
+        }
+
+        .slider-value {
+            color: var(--karasu-text-gray);
+            font-size: 12px;
+        }
+
+        .slider-input {
+            width: 100%;
+            height: 6px;
+            background: #444;
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider-input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--karasu-red);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .ai-button {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--karasu-red), var(--karasu-red-light));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 10px 0;
+            font-size: 13px;
+        }
+
+        .ai-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+        }
+
+        .ai-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--karasu-border);
+        }
+
+        .ai-button.secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Основная область - чат */
+        .ai-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: linear-gradient(180deg, var(--karasu-darker), #111111);
+            border: 1px solid var(--karasu-border);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            padding: 20px;
+            border-bottom: 1px solid var(--karasu-border);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-title {
+            color: var(--karasu-text);
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .chat-subtitle {
+            color: var(--karasu-text-gray);
+            font-size: 13px;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        /* Стилизация скроллбара */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: var(--karasu-red);
+            border-radius: 3px;
+        }
+
+        .message {
+            max-width: 70%;
+            padding: 15px;
+            border-radius: 12px;
+            position: relative;
+            animation: messageAppear 0.3s ease;
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.ai {
+            background: rgba(52, 152, 219, 0.15);
+            border-left: 4px solid var(--ai-color);
+            align-self: flex-start;
+        }
+
+        .message.user {
+            background: rgba(46, 204, 113, 0.15);
+            border-left: 4px solid var(--user-color);
+            align-self: flex-end;
+        }
+
+        .message-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 12px;
+        }
+
+        .message-sender {
+            font-weight: 600;
+        }
+
+        .message-sender.ai {
+            color: var(--ai-color);
+        }
+
+        .message-sender.user {
+            color: var(--user-color);
+        }
+
+        .message-time {
+            color: var(--karasu-text-gray);
+        }
+
+        .message-content {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .message-thinking {
+            color: var(--karasu-text-gray);
+            font-style: italic;
+            font-size: 13px;
+        }
+
+        .message-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .action-button {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid var(--karasu-border);
+            border-radius: 4px;
+            padding: 4px 8px;
+            color: var(--karasu-text-gray);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-button:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: var(--karasu-text);
+        }
+
+        .chat-input-area {
+            padding: 20px;
+            border-top: 1px solid var(--karasu-border);
+            background: rgba(0, 0, 0, 0.3);
+        }
+
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid var(--karasu-border);
+            border-radius: 8px;
+            color: var(--karasu-text);
+            font-size: 14px;
+            resize: none;
+            min-height: 60px;
+            max-height: 120px;
+            font-family: inherit;
+        }
+
+        .chat-input:focus {
+            outline: none;
+            border-color: var(--karasu-red);
+        }
+
+        .chat-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-button {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, var(--karasu-red), var(--karasu-red-light));
+            border: none;
+            border-radius: 8px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .chat-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(230, 57, 70, 0.3);
+        }
+
+        .chat-button.secondary {
+            background: rgba(255, 255, 255, 0.1);
+            font-size: 18px;
+        }
+
+        .chat-options {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .option-button {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--karasu-border);
+            border-radius: 20px;
+            color: var(--karasu-text-gray);
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .option-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--karasu-text);
+            border-color: var(--karasu-red);
+        }
+
+        /* Статусная панель */
+        .ai-status {
+            margin-top: auto;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+
+        .status-label {
+            color: var(--karasu-text-gray);
+        }
+
+        .status-value {
+            color: var(--karasu-text);
+            font-weight: 500;
+        }
+
+        .status-value.online {
+            color: #2ecc71;
+        }
+
+        .status-value.offline {
+            color: #e74c3c;
+        }
+
+        /* Индикатор загрузки */
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 10px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--ai-color);
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        .typing-dot:nth-child(3) { animation-delay: 0s; }
+
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
+        @media (max-width: 1024px) {
+            .ai-container {
+                flex-direction: column;
+                padding: 10px;
+            }
+            
+            .ai-sidebar {
+                width: 100%;
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            
+            .message {
+                max-width: 85%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ai-container">
+        <!-- Левая панель - настройки AI -->
+        <div class="ai-sidebar">
+            <h2 class="ai-title">AI Assistant</h2>
+            <p class="ai-subtitle">Configure AI models and parameters</p>
+            
+            <!-- Выбор модели -->
+            <div class="model-section">
+                <div class="section-title">AI Model</div>
+                <select class="model-select" id="modelSelect">
+                    <option value="neural_core">Neural Core v2.1</option>
+                    <option value="raven_ai">Raven AI Core</option>
+                    <option value="openai">OpenAI GPT-3.5</option>
+                    <option value="local_llm">Local LLM</option>
+                    <option value="hybrid">Hybrid Mode</option>
+                </select>
+                
+                <div class="model-info">
+                    <div><strong>Neural Core v2.1</strong></div>
+                    <div style="margin-top: 5px; font-size: 11px;">
+                        Local neural network with context memory and intent detection
+                    </div>
+                </div>
+                
+                <div class="model-stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="modelTokens">1.2K</div>
+                        <div class="stat-label">Tokens</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="modelContext">10</div>
+                        <div class="stat-label">Context</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="modelAccuracy">87%</div>
+                        <div class="stat-label">Accuracy</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="modelSpeed">42ms</div>
+                        <div class="stat-label">Speed</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Настройки AI -->
+            <div class="model-section">
+                <div class="section-title">AI Settings</div>
+                
+                <div class="ai-toggle">
+                    <span class="toggle-label">Context Memory</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="contextMemory" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="ai-toggle">
+                    <span class="toggle-label">Emotion Detection</span>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="emotionDetection" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                
+                <div class="ai-slider">
+                    <div class="slider-label">
+                        <span>Creativity</span>
+                        <span class="slider-value" id="creativityValue">0.7</span>
+                    </div>
+                    <input type="range" class="slider-input" id="creativitySlider" 
+                           min="0" max="1" step="0.1" value="0.7">
+                </div>
+                
+                <div class="ai-slider">
+                    <div class="slider-label">
+                        <span>Response Length</span>
+                        <span class="slider-value" id="lengthValue">150</span>
+                    </div>
+                    <input type="range" class="slider-input" id="lengthSlider" 
+                           min="50" max="500" step="10" value="150">
+                </div>
+            </div>
+            
+            <!-- Кнопки управления -->
+            <button class="ai-button" id="loadModel">Load Model</button>
+            <button class="ai-button secondary" id="clearMemory">Clear Memory</button>
+            <button class="ai-button secondary" id="exportChat">Export Chat</button>
+            
+            <!-- Статусная панель -->
+            <div class="ai-status">
+                <div class="status-item">
+                    <span class="status-label">Model Status:</span>
+                    <span class="status-value online" id="modelStatus">Loaded</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Memory Usage:</span>
+                    <span class="status-value" id="memoryUsage">1.2 GB</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Active Sessions:</span>
+                    <span class="status-value" id="activeSessions">1</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Основная область - чат -->
+        <div class="ai-main">
+            <div class="chat-header">
+                <div class="chat-title">Conversation with Raven AI</div>
+                <div class="chat-subtitle">
+                    <span id="chatModelInfo">Neural Core v2.1</span> | 
+                    <span id="chatStats">Context: 10 messages | Memory: 87%</span>
+                </div>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <!-- Сообщения будут добавляться сюда -->
+                <div class="message ai">
+                    <div class="message-header">
+                        <span class="message-sender ai">Raven AI</span>
+                        <span class="message-time" id="welcomeTime"></span>
+                    </div>
+                    <div class="message-content">
+                        Hello! I'm Raven AI, your neural assistant. I can help you with:
+                        <ul style="margin-top: 10px; padding-left: 20px;">
+                            <li>Answering questions and explaining concepts</li>
+                            <li>Assisting with coding and technical problems</li>
+                            <li>Analyzing text and providing summaries</li>
+                            <li>Creative writing and brainstorming</li>
+                            <li>System control through voice commands</li>
+                        </ul>
+                        How can I assist you today?
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chat-input-area">
+                <div class="chat-input-container">
+                    <textarea class="chat-input" id="chatInput" 
+                              placeholder="Type your message here... (Press Ctrl+Enter to send)" 
+                              rows="3"></textarea>
+                    
+                    <div class="chat-buttons">
+                        <button class="chat-button" id="sendButton" title="Send message">
+                            ➤
+                        </button>
+                        <button class="chat-button secondary" id="voiceButton" title="Voice input">
+                            🎤
+                        </button>
+                        <button class="chat-button secondary" id="attachButton" title="Attach file">
+                            📎
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="chat-options">
+                    <button class="option-button" data-action="summarize">Summarize</button>
+                    <button class="option-button" data-action="explain">Explain</button>
+                    <button class="option-button" data-action="translate">Translate</button>
+                    <button class="option-button" data-action="code">Write Code</button>
+                    <button class="option-button" data-action="analyze">Analyze</button>
+                    <button class="option-button" data-action="creative">Creative</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Глобальные переменные
+        let chatHistory = [];
+        let isTyping = false;
+        let currentModel = 'neural_core';
+        let aiSettings = {
+            contextMemory: true,
+            emotionDetection: true,
+            creativity: 0.7,
+            maxLength: 150
+        };
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', () => {
+            initAIPage();
+            setupEventListeners();
+            updateWelcomeTime();
+            loadChatHistory();
+        });
+
+        function initAIPage() {
+            console.log('AI Assistant page initialized');
+            
+            // Устанавливаем текущее время для приветственного сообщения
+            updateWelcomeTime();
+            
+            // Загружаем настройки из localStorage
+            loadSettings();
+            
+            // Обновляем UI в соответствии с настройками
+            updateUIFromSettings();
+        }
+
+        function setupEventListeners() {
+            // Кнопка отправки сообщения
+            document.getElementById('sendButton').addEventListener('click', sendMessage);
+            
+            // Enter для отправки (Ctrl+Enter для новой строки)
+            document.getElementById('chatInput').addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+            
+            // Голосовой ввод
+            document.getElementById('voiceButton').addEventListener('click', startVoiceInput);
+            
+            // Кнопка загрузки модели
+            document.getElementById('loadModel').addEventListener('click', loadModel);
+            
+            // Кнопка очистки памяти
+            document.getElementById('clearMemory').addEventListener('click', clearMemory);
+            
+            // Кнопка экспорта чата
+            document.getElementById('exportChat').addEventListener('click', exportChat);
+            
+            // Выбор модели
+            document.getElementById('modelSelect').addEventListener('change', (e) => {
+                currentModel = e.target.value;
+                updateModelInfo();
+                showNotification(`Switched to ${e.target.options[e.target.selectedIndex].text}`);
+            });
+            
+            // Настройки AI
+            document.getElementById('contextMemory').addEventListener('change', (e) => {
+                aiSettings.contextMemory = e.target.checked;
+                saveSettings();
+            });
+            
+            document.getElementById('emotionDetection').addEventListener('change', (e) => {
+                aiSettings.emotionDetection = e.target.checked;
+                saveSettings();
+            });
+            
+            document.getElementById('creativitySlider').addEventListener('input', (e) => {
+                const value = parseFloat(e.target.value);
+                document.getElementById('creativityValue').textContent = value.toFixed(1);
+                aiSettings.creativity = value;
+                saveSettings();
+            });
+            
+            document.getElementById('lengthSlider').addEventListener('input', (e) => {
+                const value = parseInt(e.target.value);
+                document.getElementById('lengthValue').textContent = value;
+                aiSettings.maxLength = value;
+                saveSettings();
+            });
+            
+            // Быстрые действия
+            document.querySelectorAll('.option-button').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const action = e.target.getAttribute('data-action');
+                    handleQuickAction(action);
+                });
+            });
+        }
+
+        function updateWelcomeTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('welcomeTime').textContent = timeString;
+        }
+
+        function loadSettings() {
+            const savedSettings = localStorage.getItem('aiSettings');
+            if (savedSettings) {
+                aiSettings = { ...aiSettings, ...JSON.parse(savedSettings) };
+            }
+        }
+
+        function saveSettings() {
+            localStorage.setItem('aiSettings', JSON.stringify(aiSettings));
+        }
+
+        function updateUIFromSettings() {
+            document.getElementById('contextMemory').checked = aiSettings.contextMemory;
+            document.getElementById('emotionDetection').checked = aiSettings.emotionDetection;
+            document.getElementById('creativitySlider').value = aiSettings.creativity;
+            document.getElementById('creativityValue').textContent = aiSettings.creativity.toFixed(1);
+            document.getElementById('lengthSlider').value = aiSettings.maxLength;
+            document.getElementById('lengthValue').textContent = aiSettings.maxLength;
+        }
+
+        function updateModelInfo() {
+            const modelInfo = {
+                neural_core: { tokens: '1.2K', context: 10, accuracy: '87%', speed: '42ms' },
+                raven_ai: { tokens: '0.8K', context: 5, accuracy: '92%', speed: '28ms' },
+                openai: { tokens: '4K', context: 16, accuracy: '95%', speed: '1200ms' },
+                local_llm: { tokens: '2.5K', context: 8, accuracy: '78%', speed: '850ms' },
+                hybrid: { tokens: '3K', context: 12, accuracy: '91%', speed: '320ms' }
+            };
+            
+            const info = modelInfo[currentModel] || modelInfo.neural_core;
+            
+            document.getElementById('modelTokens').textContent = info.tokens;
+            document.getElementById('modelContext').textContent = info.context;
+            document.getElementById('modelAccuracy').textContent = info.accuracy;
+            document.getElementById('modelSpeed').textContent = info.speed;
+            
+            document.getElementById('chatModelInfo').textContent = 
+                document.getElementById('modelSelect').options[document.getElementById('modelSelect').selectedIndex].text;
+            
+            document.getElementById('chatStats').textContent = 
+                `Context: ${info.context} messages | Memory: ${info.accuracy}`;
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            // Добавляем сообщение пользователя
+            addMessage('user', message);
+            input.value = '';
+            
+            // Показываем индикатор набора текста
+            showTypingIndicator();
+            
+            try {
+                // Отправляем запрос к AI API
+                const response = await processWithAI(message);
+                
+                // Скрываем индикатор и добавляем ответ
+                hideTypingIndicator();
+                addMessage('ai', response);
+                
+                // Сохраняем в историю
+                saveToHistory(message, response);
+                
+            } catch (error) {
+                hideTypingIndicator();
+                addMessage('ai', 'Sorry, I encountered an error processing your request. Please try again.');
+                console.error('AI processing error:', error);
+            }
+        }
+
+        async function processWithAI(message) {
+            // В зависимости от выбранной модели используем разные подходы
+            
+            if (currentModel === 'neural_core' || currentModel === 'raven_ai') {
+                // Используем локальный Python API
+                try {
+                    const response = await fetch('http://localhost:5000/api/ai/chat', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            message: message,
+                            model: currentModel,
+                            settings: aiSettings,
+                            context: aiSettings.contextMemory ? chatHistory.slice(-5) : []
+                        })
+                    });
+                    
+                    if (response.ok) {
+                        const data = await response.json();
+                        return data.response || 'I processed your message but got no response.';
+                    }
+                } catch (error) {
+                    console.error('API request failed:', error);
+                }
+            }
+            
+            // Fallback: локальная обработка
+            return await localAIProcessing(message);
+        }
+
+        async function localAIProcessing(message) {
+            // Простая локальная обработка для демонстрации
+            await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
+            
+            const responses = {
+                'привет': 'Привет! Как я могу помочь вам сегодня?',
+                'hello': 'Hello! How can I assist you today?',
+                'время': `Сейчас ${new Date().toLocaleTimeString('ru-RU')}`,
+                'дата': `Сегодня ${new Date().toLocaleDateString('ru-RU')}`,
+                'система': 'Информация о системе будет показана на вкладке System Monitor.',
+                'помощь': 'Я могу помочь с: вопросами, объяснениями, кодом, анализом текста, системным управлением.',
+                'default': 'Я обработал ваш запрос. Это демо-режим AI Assistant. В полной версии я буду использовать мощные нейросетевые модели для более точных ответов.'
+            };
+            
+            const messageLower = message.toLowerCase();
+            
+            for (const [key, response] of Object.entries(responses)) {
+                if (messageLower.includes(key) && key !== 'default') {
+                    return response;
+                }
+            }
+            
+            return responses.default;
+        }
+
+        function addMessage(sender, content) {
+            const chatMessages = document.getElementById('chatMessages');
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${sender}`;
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="message-sender ${sender}">${sender === 'ai' ? 'Raven AI' : 'You'}</span>
+                    <span class="message-time">${timeString}</span>
+                </div>
+                <div class="message-content">${formatMessage(content)}</div>
+                <div class="message-actions">
+                    <button class="action-button" onclick="copyMessage(this)">Copy</button>
+                    <button class="action-button" onclick="regenerateMessage(this)">Regenerate</button>
+                    <button class="action-button" onclick="saveMessage(this)">Save</button>
+                </div>
+            `;
+            
+            chatMessages.appendChild(messageDiv);
+            
+            // Прокручиваем вниз
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // Добавляем в историю
+            chatHistory.push({
+                sender,
+                content,
+                time: timeString,
+                timestamp: now.getTime()
+            });
+            
+            // Ограничиваем историю
+            if (chatHistory.length > 50) {
+                chatHistory = chatHistory.slice(-50);
+            }
+        }
+
+        function formatMessage(content) {
+            // Простое форматирование сообщений
+            return content
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/`(.*?)`/g, '<code>$1</code>');
+        }
+
+        function showTypingIndicator() {
+            const chatMessages = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'message ai';
+            typingDiv.id = 'typingIndicator';
+            typingDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="message-sender ai">Raven AI</span>
+                    <span class="message-time">typing...</span>
+                </div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(typingDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            isTyping = true;
+        }
+
+        function hideTypingIndicator() {
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator) {
+                typingIndicator.remove();
+            }
+            isTyping = false;
+        }
+
+        function startVoiceInput() {
+            showNotification('Voice input activated. Speak now...', 'info');
+            
+            // Здесь будет интеграция с Web Speech API
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                
+                recognition.lang = 'ru-RU';
+                recognition.continuous = false;
+                recognition.interimResults = false;
+                
+                recognition.onresult = (event) => {
+                    const transcript = event.results[0][0].transcript;
+                    document.getElementById('chatInput').value = transcript;
+                    showNotification(`Recognized: ${transcript}`, 'success');
+                };
+                
+                recognition.onerror = (event) => {
+                    showNotification('Voice recognition error', 'error');
+                };
+                
+                recognition.start();
+            } else {
+                showNotification('Speech recognition not supported in this browser', 'error');
+            }
+        }
+
+        function loadModel() {
+            showNotification(`Loading ${currentModel} model...`, 'info');
+            
+            // Симуляция загрузки модели
+            setTimeout(() => {
+                updateModelInfo();
+                document.getElementById('modelStatus').textContent = 'Loaded';
+                document.getElementById('modelStatus').className = 'status-value online';
+                showNotification('Model loaded successfully', 'success');
+            }, 1500);
+        }
+
+        function clearMemory() {
+            if (confirm('Clear all conversation memory? This cannot be undone.')) {
+                chatHistory = [];
+                localStorage.removeItem('chatHistory');
+                document.getElementById('chatMessages').innerHTML = `
+                    <div class="message ai">
+                        <div class="message-header">
+                            <span class="message-sender ai">Raven AI</span>
+                            <span class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                        </div>
+                        <div class="message-content">
+                            Memory cleared. Ready for a new conversation.
+                        </div>
+                    </div>
+                `;
+                showNotification('Memory cleared', 'success');
+            }
+        }
+
+        function exportChat() {
+            const chatData = {
+                timestamp: new Date().toISOString(),
+                model: currentModel,
+                settings: aiSettings,
+                messages: chatHistory
+            };
+            
+            const blob = new Blob([JSON.stringify(chatData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `raven_ai_chat_${new Date().getTime()}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showNotification('Chat exported successfully', 'success');
+        }
+
+        function loadChatHistory() {
+            const savedHistory = localStorage.getItem('chatHistory');
+            if (savedHistory) {
+                try {
+                    chatHistory = JSON.parse(savedHistory);
+                } catch (e) {
+                    console.error('Error loading chat history:', e);
+                }
+            }
+        }
+
+        function saveToHistory(userMessage, aiResponse) {
+            const historyEntry = {
+                user: userMessage,
+                ai: aiResponse,
+                timestamp: new Date().toISOString(),
+                model: currentModel
+            };
+            
+            let history = JSON.parse(localStorage.getItem('aiChatHistory') || '[]');
+            history.push(historyEntry);
+            
+            // Ограничиваем историю 100 записями
+            if (history.length > 100) {
+                history = history.slice(-100);
+            }
+            
+            localStorage.setItem('aiChatHistory', JSON.stringify(history));
+        }
+
+        function handleQuickAction(action) {
+            const actions = {
+                summarize: 'Can you summarize the following text?',
+                explain: 'Please explain this concept:',
+                translate: 'Translate this text to English:',
+                code: 'Write a Python function that:',
+                analyze: 'Analyze this data:',
+                creative: 'Write a creative story about:'
+            };
+            
+            const input = document.getElementById('chatInput');
+            const prompt = actions[action] || 'Please help me with:';
+            
+            if (input.value.trim()) {
+                input.value = `${prompt}\n\n${input.value}`;
+            } else {
+                input.value = `${prompt} `;
+            }
+            
+            input.focus();
+            showNotification(`Quick action: ${action}`, 'info');
+        }
+
+        // Функции для кнопок действий сообщений
+        window.copyMessage = function(button) {
+            const messageContent = button.closest('.message').querySelector('.message-content').textContent;
+            navigator.clipboard.writeText(messageContent).then(() => {
+                showNotification('Message copied to clipboard', 'success');
+            });
+        };
+
+        window.regenerateMessage = function(button) {
+            const messageDiv = button.closest('.message');
+            const isAI = messageDiv.classList.contains('ai');
+            
+            if (isAI) {
+                const lastUserMessage = chatHistory.filter(msg => msg.sender === 'user').pop();
+                if (lastUserMessage) {
+                    messageDiv.remove();
+                    sendMessage();
+                }
+            }
+        };
+
+        window.saveMessage = function(button) {
+            const messageContent = button.closest('.message').querySelector('.message-content').textContent;
+            const sender = button.closest('.message').classList.contains('ai') ? 'AI' : 'User';
+            
+            // Здесь можно добавить сохранение в базу данных или файл
+            showNotification(`${sender} message saved`, 'success');
+        };
+
+        function showNotification(message, type = 'info') {
+            // Простая реализация уведомления
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#27ae60' : type === 'error' ? '#e74c3c' : '#3498db'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-size: 14px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                animation: slideIn 0.3s ease;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Добавляем стили для анимации
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

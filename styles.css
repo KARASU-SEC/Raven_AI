@@ -1,0 +1,669 @@
+/* === KARASU СТИЛЬ === */
+/* Стили Raven AI Karasu Edition */
+
+/* Базовые сбросы */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Цветовая палитра KARASU */
+    --karasu-dark: #0a0a0a;
+    --karasu-darker: #050505;
+    --karasu-gray: #111111;
+    --karasu-gray-light: #1a1a1a;
+    --karasu-red: #e63946;
+    --karasu-red-dark: #b30000;
+    --karasu-red-light: #ff003c;
+    --karasu-text: #f5f5f5;
+    --karasu-text-gray: #b1b1b1;
+    --karasu-border: #333333;
+    --karasu-border-light: #444444;
+    --karasu-accent: #e63946;
+    --karasu-success: #27ae60;
+    --karasu-warning: #f39c12;
+    --karasu-error: #e74c3c;
+    --karasu-info: #3498db;
+}
+
+/* Общие стили */
+body {
+    font-family: 'Inter', 'Noto Sans JP', sans-serif;
+    background-color: var(--karasu-dark);
+    color: var(--karasu-text);
+    overflow: hidden;
+    height: 100vh;
+    position: relative;
+}
+
+/* Экраны загрузки */
+.loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--karasu-darker), var(--karasu-gray));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+
+.loading-content {
+    text-align: center;
+    padding: 40px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 16px;
+    border: 1px solid var(--karasu-red);
+    box-shadow: 0 8px 32px rgba(230, 57, 70, 0.2);
+}
+
+.kanji-loading {
+    font-size: 80px;
+    color: var(--karasu-red);
+    font-family: 'Noto Sans JP', sans-serif;
+    margin-bottom: 20px;
+    animation: pulse 2s infinite;
+}
+
+.loading-title {
+    font-size: 32px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    margin-bottom: 10px;
+    background: linear-gradient(90deg, var(--karasu-text), var(--karasu-red-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.loading-subtitle {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    color: var(--karasu-text-gray);
+    margin-bottom: 30px;
+    opacity: 0.8;
+}
+
+.progress-bar {
+    width: 400px;
+    height: 6px;
+    background: var(--karasu-border);
+    border-radius: 3px;
+    overflow: hidden;
+    margin: 0 auto 15px;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--karasu-red), var(--karasu-red-light));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.loading-status {
+    font-size: 14px;
+    color: var(--karasu-text-gray);
+}
+
+/* Основное приложение */
+.app-container {
+    display: none;
+    height: 100vh;
+    flex-direction: column;
+}
+
+/* Title Bar */
+.title-bar {
+    height: 40px;
+    background: linear-gradient(90deg, var(--karasu-darker), var(--karasu-gray));
+    border-bottom: 1px solid var(--karasu-red);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 16px;
+    -webkit-app-region: drag;
+    user-select: none;
+    position: relative;
+}
+
+.title-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.logo {
+    color: var(--karasu-red);
+    font-size: 24px;
+    font-family: 'Noto Sans JP', sans-serif;
+    font-weight: bold;
+}
+
+.app-name {
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.version {
+    font-size: 11px;
+    color: var(--karasu-text-gray);
+    font-weight: 400;
+}
+
+.title-jp {
+    color: var(--karasu-red);
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 12px;
+    opacity: 0.8;
+}
+
+.window-controls {
+    display: flex;
+    gap: 8px;
+    -webkit-app-region: no-drag;
+}
+
+.window-btn {
+    width: 30px;
+    height: 30px;
+    background: var(--karasu-gray-light);
+    border: none;
+    color: var(--karasu-text);
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    font-family: 'Inter', sans-serif;
+}
+
+.window-btn:hover {
+    background: var(--karasu-border);
+}
+
+.window-btn.close:hover {
+    background: var(--karasu-red);
+    color: white;
+}
+
+/* Основной контейнер */
+.main-container {
+    display: flex;
+    flex: 1;
+    height: calc(100vh - 70px);
+}
+
+/* Sidebar */
+.sidebar {
+    width: 260px;
+    background: linear-gradient(180deg, var(--karasu-gray), var(--karasu-darker));
+    border-right: 1px solid var(--karasu-border);
+    display: flex;
+    flex-direction: column;
+    transition: width 0.3s ease;
+}
+
+.nav-section {
+    padding: 20px 16px;
+    border-bottom: 1px solid var(--karasu-border);
+}
+
+.nav-header {
+    color: var(--karasu-text-gray);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--karasu-border);
+}
+
+.jp-text {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 16px;
+    color: var(--karasu-text-gray);
+    text-decoration: none;
+    cursor: pointer;
+    border-left: 3px solid transparent;
+    transition: all 0.3s ease;
+    margin-bottom: 4px;
+    border-radius: 0 8px 8px 0;
+}
+
+.nav-item:hover {
+    background: rgba(230, 57, 70, 0.1);
+    color: var(--karasu-text);
+    border-left-color: var(--karasu-red-light);
+}
+
+.nav-item.active {
+    background: rgba(230, 57, 70, 0.15);
+    color: var(--karasu-red-light);
+    border-left-color: var(--karasu-red);
+}
+
+.nav-icon {
+    font-size: 18px;
+    width: 24px;
+    text-align: center;
+}
+
+.nav-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.nav-jp {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 10px;
+    opacity: 0.7;
+}
+
+/* Основное содержимое */
+.main-content {
+    flex: 1;
+    background: linear-gradient(135deg, rgba(10, 10, 10, 0.9), rgba(5, 5, 5, 0.95));
+    overflow-y: auto;
+    padding: 30px;
+}
+
+/* Карточки KARASU */
+.karasu-card {
+    background: linear-gradient(145deg, var(--karasu-gray), var(--karasu-darker));
+    border: 1px solid var(--karasu-border);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.karasu-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--karasu-red), transparent);
+}
+
+.karasu-card:hover {
+    border-color: var(--karasu-red);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(230, 57, 70, 0.2);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--karasu-border);
+}
+
+.card-header h2, .card-header h3 {
+    font-size: 18px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.jp-sub {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 11px;
+    color: var(--karasu-text-gray);
+    opacity: 0.7;
+}
+
+/* Статус бар */
+.status-bar {
+    height: 30px;
+    background: var(--karasu-darker);
+    border-top: 1px solid var(--karasu-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 20px;
+    font-size: 12px;
+}
+
+.status-left, .status-center, .status-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--karasu-text-gray);
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.status-indicator.connected {
+    background: var(--karasu-success);
+    animation: pulse 2s infinite;
+}
+
+.status-indicator.error {
+    background: var(--karasu-error);
+}
+
+.status-indicator.warning {
+    background: var(--karasu-warning);
+}
+
+.separator {
+    color: var(--karasu-border);
+    opacity: 0.5;
+}
+
+/* Утилиты */
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+    animation: fadeIn 0.3s ease;
+}
+
+/* Анимации */
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+/* Скроллбар */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--karasu-dark);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--karasu-red);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--karasu-red-light);
+}
+
+/* Дополнительные стили для компонентов */
+
+/* Dashboard */
+.page-header {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--karasu-border);
+}
+
+.page-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--karasu-text), var(--karasu-red-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.page-subtitle {
+    color: var(--karasu-text-gray);
+    font-size: 14px;
+    font-family: 'Noto Sans JP', sans-serif;
+}
+
+.metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.metric-card {
+    min-height: 160px;
+}
+
+.metric-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.metric-icon {
+    font-size: 24px;
+}
+
+.metric-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--karasu-text-gray);
+}
+
+.metric-value {
+    font-size: 42px;
+    font-weight: 700;
+    margin: 10px 0;
+}
+
+.metric-progress {
+    margin-top: 15px;
+}
+
+.dashboard-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.chart-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.quick-commands, .quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.quick-command, .quick-action {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--karasu-border);
+    border-radius: 8px;
+    color: var(--karasu-text);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: left;
+}
+
+.quick-command:hover, .quick-action:hover {
+    background: rgba(230, 57, 70, 0.1);
+    border-color: var(--karasu-red);
+    transform: translateY(-2px);
+}
+
+.command-icon, .action-icon {
+    font-size: 20px;
+    color: var(--karasu-red);
+}
+
+.command-text, .action-text {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+/* Процессы */
+.processes-header {
+    display: flex;
+    padding: 12px 16px;
+    background: var(--karasu-gray);
+    border-radius: 8px 8px 0 0;
+    font-weight: 600;
+    font-size: 13px;
+    border-bottom: 1px solid var(--karasu-border);
+}
+
+.process-column {
+    padding: 0 10px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.process-column.sortable:hover {
+    color: var(--karasu-red);
+}
+
+.processes-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.process-row {
+    display: flex;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--karasu-border);
+    align-items: center;
+    transition: background 0.2s;
+}
+
+.process-row:hover {
+    background: rgba(230, 57, 70, 0.05);
+}
+
+.process-cell {
+    padding: 0 10px;
+    font-size: 13px;
+}
+
+.process-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+/* Статистика */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.stat-item {
+    padding: 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 8px;
+    border: 1px solid var(--karasu-border);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--karasu-text-gray);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--karasu-red);
+}
+
+/* Адаптивность */
+@media (max-width: 1200px) {
+    .dashboard-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .sidebar {
+        width: 70px;
+    }
+    
+    .nav-text, .nav-jp {
+        display: none;
+    }
+}
+
+/* Анимации */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in-up {
+    animation: fadeInUp 0.3s ease forwards;
+}

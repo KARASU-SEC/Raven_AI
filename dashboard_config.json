@@ -1,0 +1,32 @@
+{
+  "theme": "light",
+  "accent_color": "#3498db",
+  "sidebar_width": 280,
+  "card_radius": 12,
+  "font_family": "Segoe UI, -apple-system, system-ui",
+  "api_keys": {
+    "elevenlabs": "",
+    "openweathermap": "",
+    "newsapi": ""
+  },
+  "wake_words": [
+    "рэйвэн",
+    "рейвен",
+    "raven",
+    "активация"
+  ],
+  "voice_settings": {
+    "engine": "sapi5",
+    "voice": "david",
+    "rate": 170,
+    "volume": 0.9
+  },
+  "system_monitor": {
+    "update_interval": 2000,
+    "show_top_processes": 10
+  },
+  "chat": {
+    "max_history": 50,
+    "auto_scroll": true
+  }
+}

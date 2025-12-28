@@ -1,0 +1,5 @@
+{
+    "elevenlabs": "ваш_ключ_elevenlabs",
+    "openweathermap": "ваш_ключ_погоды",
+    "newsapi": "ваш_ключ_новостей"
+}
